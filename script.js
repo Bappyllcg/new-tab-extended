@@ -85,10 +85,10 @@ $(document).ready(() => {
 
     // Add this preload function
     function preloadAutocomplete() {
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        //const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
         const targetUrl = 'https://duckduckgo.com/ac/?q=a&type=list';
 
-        fetch(proxyUrl + targetUrl)
+        fetch(targetUrl)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -161,17 +161,16 @@ $(document).ready(() => {
         const suggestions = $('#suggestions li');
         const maxIndex = suggestions.length - 1;
 
-        // Handle different key presses
-        switch(e.key) {
+        switch (e.key) {
             case 'ArrowDown':
                 e.preventDefault();
-                currentFocus = Math.min(currentFocus + 1, maxIndex);
+                currentFocus = (currentFocus < maxIndex) ? currentFocus + 1 : 0; // Loop back to the first suggestion
                 updateFocus(suggestions);
                 break;
 
             case 'ArrowUp':
                 e.preventDefault();
-                currentFocus = Math.max(currentFocus - 1, -1);
+                currentFocus = (currentFocus > 0) ? currentFocus - 1 : maxIndex; // Loop to the last suggestion
                 updateFocus(suggestions);
                 break;
 
@@ -181,13 +180,13 @@ $(document).ready(() => {
                     const selectedText = suggestions.eq(currentFocus).text();
                     $('.search-bar').val(selectedText);
                     $('#suggestions').empty().css('opacity', '0');
-                    $('.search-container').submit();
+                    $('.search-container').submit(); // Trigger search
                 }
                 break;
 
             case 'Escape':
                 $('#suggestions').empty().css('opacity', '0');
-                currentFocus = -1;
+                currentFocus = -1; // Reset focus
                 break;
         }
     });
@@ -195,13 +194,10 @@ $(document).ready(() => {
     function updateFocus(suggestions) {
         suggestions.removeClass('active');
         if (currentFocus > -1) {
-            suggestions.eq(currentFocus)
-                .addClass('active')
-                .scrollIntoView({ block: 'nearest' });
-            $('.search-bar').val(suggestions.eq(currentFocus).text());
-        } else {
-            // Restore original input value when no suggestion is selected
-            $('.search-bar').val($('.search-bar').data('originalValue'));
+            const focusedSuggestion = suggestions.eq(currentFocus);
+            focusedSuggestion.addClass('active');
+            // Scroll the focused suggestion into view
+            focusedSuggestion[0].scrollIntoView({ block: 'nearest' });
         }
     }
 

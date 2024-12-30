@@ -630,7 +630,7 @@ input:checked + .toggle-slider:before {
     transition: background-color 0.2s;
 }
 
-.suggestions li:hover {
+.suggestions li:hover, .suggestions li.active {
     background-color: #f5f5f5; /* Assuming a default hover background color */
 }
 
