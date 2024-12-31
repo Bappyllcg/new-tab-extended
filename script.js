@@ -23,31 +23,6 @@ $(document).ready(() => {
     }
     updateTimeAndDate();
 
-    // Search engine selection
-    $('.search-option').click(function () {
-        $('.search-option').removeClass('active');
-        $(this).addClass('active');
-    });
-
-    // Search functionality
-    $('.search-container').submit(function(e) {
-        e.preventDefault();  // Prevent default form submission
-        const query = $('.search-bar').val();
-        const engine = $('.search-option.active').data('engine');
-
-        const searchUrls = {
-            google: `https://www.google.com/search?q=${query}`,
-            duck: `https://duckduckgo.com/?q=${query}`,
-            bing: `https://www.bing.com/search?q=${query}`,
-            brave: `https://search.brave.com/search?q=${query}`,
-            youtube: `https://www.youtube.com/results?search_query=${query}`
-        };
-
-        if (query && engine) {
-            window.location.href = searchUrls[engine];
-        }
-    });
-
     //Weather Input
     const weather = () => {
         const savedLocation = localStorage.getItem('weatherLocation') || 'New York';
@@ -79,6 +54,69 @@ $(document).ready(() => {
     }
 
     weather();
+
+    // IP Info
+    const getIpInfo = () => {
+        $.ajax({
+            url: 'https://api.ipquery.io/?format=json',
+            method: 'GET',
+            success: function(data) {
+                updateIpInfoUI(data);
+            },
+            error: function() {
+                console.log('IP Info API Error');
+            }
+        });
+    }
+
+    const updateIpInfoUI = (data) => {
+        $('.ip-address').text(data.ip);
+        $('.country').text(data.location.country_code);
+        $('.city').text(data.location.city);
+        $('.flag').text(getFlagEmoji(data.location.country_code));
+        $('.isp').text(data.isp.isp);
+        $('.timezone').text(data.location.timezone);
+        $('.coordinates').text(`${data.location.latitude.toFixed(2)}, ${data.location.longitude.toFixed(2)}`);
+        $('.risk-score').text(data.risk.risk_score);
+    }
+
+    const getFlagEmoji = (countryCode) => {
+        const codePoints = countryCode
+            .toUpperCase()
+            .split('')
+            .map(char => 127397 + char.charCodeAt());
+        return String.fromCodePoint(...codePoints);
+    }
+
+    getIpInfo();
+
+    // Search engine selection
+    $('.search-option').click(function () {
+        $('.search-option').removeClass('active');
+        $(this).addClass('active');
+    });
+
+    // Search functionality
+    $('.search-container').submit(function(e) {
+        e.preventDefault();  // Prevent default form submission
+        const query = $('.search-bar').val();
+        const engine = $('.search-option.active').data('engine');
+
+        const searchUrls = {
+            google: `https://www.google.com/search?q=${query}`,
+            duck: `https://duckduckgo.com/?q=${query}`,
+            bing: `https://www.bing.com/search?q=${query}`,
+            brave: `https://search.brave.com/search?q=${query}`,
+            youtube: `https://www.youtube.com/results?search_query=${query}`,
+            startpage: `https://www.startpage.com/do/search?q=${query}`,
+            yandex: `https://yandex.com/search/?text=${query}`,
+            googleMaps: `https://www.google.com/maps/search/${query}`,
+        };
+
+        if (query && engine) {
+            window.location.href = searchUrls[engine];
+        }
+    });
 
     // Updated search suggestions code
     let currentFocus = -1;  // Track currently focused suggestion
@@ -181,6 +219,9 @@ $(document).ready(() => {
                     $('.search-bar').val(selectedText);
                     $('#suggestions').empty().css('opacity', '0');
                     $('.search-container').submit(); // Trigger search
+                } else {
+                    // Trigger search if no suggestion is focused
+                    $('.search-container').submit(); // Add this line to submit the form
                 }
                 break;
 
@@ -211,7 +252,7 @@ $(document).ready(() => {
         $('.search-bar').val($(this).text());
         $('#suggestions').empty();
         // Optionally trigger the search
-        $('.search-container').submit();
+        //$('.search-container').submit();
     });
 
     // Clear suggestions when clicking outside

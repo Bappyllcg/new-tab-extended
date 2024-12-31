@@ -155,7 +155,7 @@ input:focus {
 .box {
     height: 60%;
     width: 60%;
-    background-color: #e2eeff;
+    background-color: var(--card-bg);
     position: absolute;
     border-radius: 20px;
 }
@@ -913,4 +913,40 @@ input:checked + .toggle-slider:before {
     height: 100%;
     background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
     z-index: 999; /* Ensure it is above other content */
+}
+
+/* IP Card  */
+/* .ip-card {
+    background: linear-gradient(to bottom right, #4a90e2, #357ae8);
+    border-radius: 20px;
+    padding: 20px;
+    width: 300px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+} */
+.ip-address {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.location-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.country {
+    font-size: 36px;
+    font-weight: 300;
+}
+.city {
+    font-size: 18px;
+}
+.flag {
+    font-size: 48px;
+}
+.ip-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
 }
