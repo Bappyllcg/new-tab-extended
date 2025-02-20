@@ -1,42 +1,48 @@
 $(document).ready(() => {
-    function updateTimeAndDate() {
-        const $secSpan = $('#sec');
-        const $minSpan = $('#min');
-        const $hrSpan = $('#hr');
-        const $currentDate = $('#current-date');
+    // Clock
+    function updateClock() {
+        $(".clock").each(function() {
+            const clock = $(this);
+            const timezone = clock.data('timezone'); // Get the timezone from data attribute
+            const now = moment().tz(timezone); // Use moment-timezone to get the correct time
+            const hour = now.format('H');
+            const minute = now.format('m');
+            const second = now.format('s');
 
-        function update() {
-            const now = moment();
-            // Update clock
-            let sec = now.seconds() <= 30 ? now.seconds() + 30 : now.seconds() - 30;
-            $secSpan.text(sec);
-            $secSpan.css('transform', `rotate(${now.seconds()*6}deg)`);
-            $minSpan.css('transform', `rotate(${now.minutes()*6+now.seconds()/10}deg)`);
-            $hrSpan.css('transform', `rotate(${((now.hours()%12)*30)+now.minutes()/2}deg)`);
+            // Calculate the angle for the hands
+            const secondAngle = (second / 60) * 360;
+            const minuteAngle = (minute / 60) * 360;
+            const hourAngle = (hour / 12) * 360;
 
-            // Update date
-            $currentDate.text(now.format('ddd, MMM D'));
-        }
-
-        update();
-        setInterval(update, 1000);
+            // Update the clock hands
+            clock.find(".second-hand").css('transform', `rotate(${secondAngle}deg)`);
+            clock.find(".minute-hand").css('transform', `rotate(${minuteAngle}deg)`);
+            clock.find(".hour-hand").css('transform', `rotate(${hourAngle}deg)`);
+        });
     }
-    updateTimeAndDate();
+
+    // Update the clock every second
+    setInterval(updateClock, 1000);
+
+    // Initialize the clock after the DOM is ready
+    // $(document).ready(function() {
+        updateClock();
+    // });
 
     //Weather Input
     const weather = () => {
         const savedLocation = localStorage.getItem('weatherLocation') || 'New York';
         const apiKey = getApiKey();
         const encodedLocation = encodeURIComponent(savedLocation);
-        
+
         $.ajax({
             url: `https://api.openweathermap.org/data/2.5/weather?q=${encodedLocation}&appid=${apiKey}&units=metric`,
             method: 'GET',
-            success: function(data) {
+            success: function (data) {
                 updateWeatherUI(data);
             },
-            error: function() {
-                console.log('Weather API Error');
+            error: function (data) {
+                console.log('Weather API Error: ' + data);
             }
         });
     }
@@ -53,18 +59,31 @@ $(document).ready(() => {
         console.log(data)
     }
 
-    weather();
+    if (localStorage.getItem('weatherLocation')) {
+        weather();
+    }
+
+
 
     // IP Info
     const getIpInfo = () => {
         $.ajax({
             url: 'https://api.ipquery.io/?format=json',
             method: 'GET',
-            success: function(data) {
+            success: function (data) {
                 updateIpInfoUI(data);
+                if (!localStorage.getItem('weatherLocation')) {
+                    localStorage.setItem('weatherLocation', data.location.city + ', ' + data.location.country_code);
+                    weather();
+                }
+
             },
-            error: function() {
+            error: function () {
                 console.log('IP Info API Error');
+                if (!localStorage.getItem('weatherLocation')) {
+                    localStorage.setItem('weatherLocation', data.location.city + ', ' + data.location.country_code);
+                    weather();
+                }
             }
         });
     }
@@ -97,8 +116,8 @@ $(document).ready(() => {
     });
 
     // Search functionality
-    $('.search-container').submit(function(e) {
-        e.preventDefault();  // Prevent default form submission
+    $('.search-container').submit(function (e) {
+        e.preventDefault(); // Prevent default form submission
         const query = $('.search-bar').val();
         const engine = $('.search-option.active').data('engine');
 
@@ -108,7 +127,6 @@ $(document).ready(() => {
             bing: `https://www.bing.com/search?q=${query}`,
             brave: `https://search.brave.com/search?q=${query}`,
             youtube: `https://www.youtube.com/results?search_query=${query}`,
-            startpage: `https://www.startpage.com/do/search?q=${query}`,
             yandex: `https://yandex.com/search/?text=${query}`,
             googleMaps: `https://www.google.com/maps/search/${query}`,
         };
@@ -119,7 +137,7 @@ $(document).ready(() => {
     });
 
     // Updated search suggestions code
-    let currentFocus = -1;  // Track currently focused suggestion
+    let currentFocus = -1; // Track currently focused suggestion
 
     // Add this preload function
     function preloadAutocomplete() {
@@ -143,7 +161,7 @@ $(document).ready(() => {
     }
 
     // Modified search bar input handler (remove debouncing)
-    $('.search-bar').on('input', function() {
+    $('.search-bar').on('input', function () {
         const autocompleteEnabled = $('#autocompleteToggle').is(':checked');
         if (!autocompleteEnabled) {
             return;
@@ -151,51 +169,51 @@ $(document).ready(() => {
 
         currentFocus = -1;
         const query = $(this).val().trim();
-        
+
         if (!query) {
             $('#suggestions').empty().css('opacity', '0');
             return;
         }
-        
-        fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&type=list`, {
-            method: 'GET',
-        })
-        .then(response => response.json())
-        .then(data => {
-            const suggestionsList = $('#suggestions');
-            suggestionsList.empty();
 
-            if (data[1].length > 0) {
-                data[1].forEach(function(suggestion) {
-                    suggestionsList.append(`<li>${suggestion}</li>`);
-                });
-                suggestionsList.css('opacity', '1');
-            } else {
-                suggestionsList.css('opacity', '0');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching suggestions:', error);
-            $('#suggestions').empty().css('opacity', '0');
-        });
+        fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&type=list`, {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                const suggestionsList = $('#suggestions');
+                suggestionsList.empty();
+
+                if (data[1].length > 0) {
+                    data[1].forEach(function (suggestion) {
+                        suggestionsList.append(`<li>${suggestion}</li>`);
+                    });
+                    suggestionsList.css('opacity', '1');
+                } else {
+                    suggestionsList.css('opacity', '0');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching suggestions:', error);
+                $('#suggestions').empty().css('opacity', '0');
+            });
     });
 
     // Call preload when the page loads
     preloadAutocomplete();
 
     // Also preload when the autocomplete toggle is enabled
-    $('#autocompleteToggle').on('change', function() {
+    $('#autocompleteToggle').on('change', function () {
         const isEnabled = $(this).is(':checked');
         localStorage.setItem('autocompleteEnabled', isEnabled);
         updateAutocompleteUI(isEnabled);
-        
+
         if (isEnabled) {
             preloadAutocomplete();
         }
     });
 
     // Add keyboard navigation
-    $('.search-bar').on('keydown', function(e) {
+    $('.search-bar').on('keydown', function (e) {
         const suggestions = $('#suggestions li');
         const maxIndex = suggestions.length - 1;
 
@@ -237,18 +255,21 @@ $(document).ready(() => {
         if (currentFocus > -1) {
             const focusedSuggestion = suggestions.eq(currentFocus);
             focusedSuggestion.addClass('active');
+            $('.search-bar').val(focusedSuggestion.text());
             // Scroll the focused suggestion into view
-            focusedSuggestion[0].scrollIntoView({ block: 'nearest' });
+            focusedSuggestion[0].scrollIntoView({
+                block: 'nearest'
+            });
         }
     }
 
     // Store original input value
-    $('.search-bar').on('input', function() {
+    $('.search-bar').on('input', function () {
         $(this).data('originalValue', $(this).val());
     });
 
     // Handle suggestion click
-    $(document).on('click', '#suggestions li', function() {
+    $(document).on('click', '#suggestions li', function () {
         $('.search-bar').val($(this).text());
         $('#suggestions').empty();
         // Optionally trigger the search
@@ -256,7 +277,7 @@ $(document).ready(() => {
     });
 
     // Clear suggestions when clicking outside
-    $(document).on('click', function(e) {
+    $(document).on('click', function (e) {
         if (!$(e.target).closest('.search-container').length) {
             $('#suggestions').empty().css('opacity', '0');
         }
@@ -267,7 +288,7 @@ $(document).ready(() => {
         // Load saved setting or default to true
         const autocompleteEnabled = localStorage.getItem('autocompleteEnabled') !== 'false';
         $('#autocompleteToggle').prop('checked', autocompleteEnabled);
-        
+
         // Update UI based on current setting
         updateAutocompleteUI(autocompleteEnabled);
     }
@@ -289,32 +310,32 @@ $(document).ready(() => {
     }
 
     // Handle location save
-    $('#saveLocation').click(function(e) {
+    $('#saveLocation').click(function (e) {
         e.preventDefault();
         $('.city-name').text('Loading...');
         const newLocation = $('#locationInput').val().trim();
-        
+
         if (newLocation) {
             // Test the location first
             const apiKey = getApiKey();
             const encodedLocation = encodeURIComponent(newLocation);
-            
+
             $.ajax({
                 url: `https://api.openweathermap.org/data/2.5/weather?q=${encodedLocation}&appid=${apiKey}&units=metric`,
                 method: 'GET',
-                success: function(data) {
+                success: function (data) {
                     // Save location if valid
                     localStorage.setItem('weatherLocation', newLocation);
                     weather(); // Update weather display
                     //alert('Location updated successfully!');
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Weather API Error:', xhr);
                     // Try with geocoding API as fallback
                     $.ajax({
                         url: `https://api.openweathermap.org/geo/1.0/direct?q=${encodedLocation}&limit=1&appid=${apiKey}`,
                         method: 'GET',
-                        success: function(geoData) {
+                        success: function (geoData) {
                             if (geoData && geoData.length > 0) {
                                 const location = `${geoData[0].name}, ${geoData[0].country}`;
                                 localStorage.setItem('weatherLocation', location);
@@ -324,7 +345,7 @@ $(document).ready(() => {
                                 alert('Invalid location. Please try again.');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             alert('Invalid location. Please try again.');
                         }
                     });
@@ -339,39 +360,39 @@ $(document).ready(() => {
     initializeLocationSettings();
 
     // Add geolocation detection
-    $('#detectLocation').click(function() {
+    $('#detectLocation').click(function () {
         if ("geolocation" in navigator) {
             const button = $(this);
             button.prop('disabled', true);
-            
+
             // Show loading state
             button.html('<svg class="loading-spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle></svg>');
-            
-            navigator.geolocation.getCurrentPosition(function(position) {
+
+            navigator.geolocation.getCurrentPosition(function (position) {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 const apiKey = getApiKey();
-                
+
                 // Reverse geocoding to get city name
                 $.ajax({
                     url: `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`,
                     method: 'GET',
-                    success: function(data) {
+                    success: function (data) {
                         if (data && data[0]) {
                             const location = `${data[0].name}, ${data[0].country}`;
                             $('#locationInput').val(location);
                         }
                     },
-                    error: function() {
+                    error: function () {
                         alert('Could not determine location name. Please enter manually.');
                     },
-                    complete: function() {
+                    complete: function () {
                         // Restore button state
                         button.prop('disabled', false);
                         button.html('<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>');
                     }
                 });
-            }, function(error) {
+            }, function (error) {
                 alert('Could not detect location. Please ensure location access is allowed.');
                 button.prop('disabled', false);
                 button.html('<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>');
@@ -382,13 +403,36 @@ $(document).ready(() => {
     });
 
     // Initialize bookmarks with default values
-    let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [
-        { url: 'https://facebook.com', favicon: 'https://www.google.com/s2/favicons?domain=facebook.com&sz=32', name: 'Facebook' },
-        { url: 'https://youtube.com', favicon: 'https://www.google.com/s2/favicons?domain=youtube.com&sz=32', name: 'YouTube' },
-        { url: 'https://telegram.org', favicon: 'https://www.google.com/s2/favicons?domain=telegram.org&sz=32', name: 'Telegram' },
-        { url: 'https://web.whatsapp.com', favicon: 'https://www.google.com/s2/favicons?domain=whatsapp.com&sz=32', name: 'WhatsApp' },
-        { url: 'https://reddit.com', favicon: 'https://www.google.com/s2/favicons?domain=reddit.com&sz=32', name: 'Reddit' },
-        { url: 'https://twitter.com', favicon: 'https://www.google.com/s2/favicons?domain=twitter.com&sz=32', name: 'Twitter' }
+    let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [{
+            url: 'https://facebook.com',
+            favicon: 'https://www.google.com/s2/favicons?domain=facebook.com&sz=32',
+            name: 'Facebook'
+        },
+        {
+            url: 'https://youtube.com',
+            favicon: 'https://www.google.com/s2/favicons?domain=youtube.com&sz=32',
+            name: 'YouTube'
+        },
+        {
+            url: 'https://telegram.org',
+            favicon: 'https://www.google.com/s2/favicons?domain=telegram.org&sz=32',
+            name: 'Telegram'
+        },
+        {
+            url: 'https://web.whatsapp.com',
+            favicon: 'https://www.google.com/s2/favicons?domain=whatsapp.com&sz=32',
+            name: 'WhatsApp'
+        },
+        {
+            url: 'https://reddit.com',
+            favicon: 'https://www.google.com/s2/favicons?domain=reddit.com&sz=32',
+            name: 'Reddit'
+        },
+        {
+            url: 'https://twitter.com',
+            favicon: 'https://www.google.com/s2/favicons?domain=twitter.com&sz=32',
+            name: 'Twitter'
+        }
     ];
 
     // Function to get favicon URL
@@ -429,7 +473,7 @@ $(document).ready(() => {
         const bookmarksContainer = $('.bookmarks'); // For bottom-center bookmarks
         bookmarksList.empty(); // Clear existing bookmarks in settings
         bookmarksContainer.empty(); // Clear existing bookmarks in bottom-center
-        
+
         bookmarks.forEach(bookmark => {
             // Render in settings panel
             bookmarksList.append(`
@@ -473,7 +517,11 @@ $(document).ready(() => {
 
         // Check if bookmark already exists
         if (!bookmarks.some(b => b.url === url)) {
-            bookmarks.push({ url, favicon, name });
+            bookmarks.push({
+                url,
+                favicon,
+                name
+            });
             renderBookmarks();
             $('#bookmarkUrl').val('');
         } else {
@@ -482,20 +530,20 @@ $(document).ready(() => {
     });
 
     // Remove bookmark handler
-    $(document).on('click', '.remove-bookmark', function() {
+    $(document).on('click', '.remove-bookmark', function () {
         const url = $(this).data('url');
         bookmarks = bookmarks.filter(b => b.url !== url);
         renderBookmarks();
     });
 
     // Edit bookmark handler
-    $(document).on('click', '.edit-bookmark', function() {
+    $(document).on('click', '.edit-bookmark', function () {
         const url = $(this).data('url');
         const bookmark = bookmarks.find(b => b.url === url);
-        
+
         const newName = prompt("Edit bookmark name:", bookmark.name);
         const newUrl = prompt("Edit bookmark URL:", bookmark.url);
-        
+
         if (newName && newUrl && isValidUrl(newUrl)) {
             bookmark.name = newName;
             bookmark.url = newUrl;
@@ -514,7 +562,7 @@ $(document).ready(() => {
     });
 
     // Hide settings panel and overlay when clicking outside
-    $(document).on('click', function(event) {
+    $(document).on('click', function (event) {
         const settingsPanel = $('#settingsPanel');
         const overlay = $('#overlay');
         if (!settingsPanel.is(event.target) && settingsPanel.has(event.target).length === 0) {
@@ -524,7 +572,7 @@ $(document).ready(() => {
     });
 
     // Hide settings panel and overlay when clicking on the overlay
-    $('#overlay').on('click', function() {
+    $('#overlay').on('click', function () {
         $('#settingsPanel').removeClass('open'); // Hide the settings panel
         $(this).hide(); // Hide the overlay
     });
@@ -532,4 +580,3 @@ $(document).ready(() => {
     // Initial render
     renderBookmarks();
 });
-

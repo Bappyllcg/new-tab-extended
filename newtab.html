@@ -19,21 +19,47 @@
             <div class="container">
                 <div class="root-data" id="root">
                     <div class="left-section">
-                        <div class="clock-container">
-                            <div class="slate">
-                                <div class="box box-one"></div>
-                                <div class="box box-two"></div>
-                                <div class="box box-three"></div>
+                        <div class="clock-row">
+                            <div class="clock-column main-card">
+                                <div class="clock" data-timezone="Europe/Copenhagen">
+                                    <div class="clock-hands">
+                                        <div class="hand hour-hand"></div>
+                                        <div class="hand minute-hand"></div>
+                                        <div class="hand second-hand"></div>
+                                    </div>
+                                </div>
+                                <div class="clock-title">Europe/Copenhagen</div>
                             </div>
-                            <div class="pins">
-                                <span id="sec">0</span>
-                                <span id="hr"></span>
-                                <span id="min"></span>
+                            <div class="clock-column main-card">
+                                <div class="clock" data-timezone="Europe/London">
+                                    <div class="clock-hands">
+                                        <div class="hand hour-hand"></div>
+                                        <div class="hand minute-hand"></div>
+                                        <div class="hand second-hand"></div>
+                                    </div>
+                                </div>
+                                <div class="clock-title">Europe/London</div>
                             </div>
-                        </div>
-                        <div class="site-info">
-                            <h2>sabappy.com</h2>
-                            <p id="current-date">Sun, Dec 29</p>
+                            <div class="clock-column main-card">
+                                <div class="clock" data-timezone="Asia/Dhaka">
+                                    <div class="clock-hands">
+                                        <div class="hand hour-hand"></div>
+                                        <div class="hand minute-hand"></div>
+                                        <div class="hand second-hand"></div>
+                                    </div>
+                                </div>
+                                <div class="clock-title">Asia/Dhaka</div>
+                            </div>
+                            <div class="clock-column main-card">
+                                <div class="clock" data-timezone="America/New_York">
+                                    <div class="clock-hands">
+                                        <div class="hand hour-hand"></div>
+                                        <div class="hand minute-hand"></div>
+                                        <div class="hand second-hand"></div>
+                                    </div>
+                                </div>
+                                <div class="clock-title">America/New_York</div>
+                            </div>
                         </div>
                     </div>
 
@@ -44,8 +70,8 @@
                                     <div class="city-name">Loading...</div>
                                     <div class="weather-main">
                                         <div>
-                                            <div class="temperature">??°</div>
-                                            <div class="weather-description"></div>
+                                            <div class="temperature">00°</div>
+                                            <div class="weather-description">..</div>
                                         </div>
                                         <div class="weather-icon">
                                             <img src="http://openweathermap.org/img/wn/01n@2x.png" alt="Weather icon">
@@ -85,11 +111,11 @@
                             </div>
                             <div class="main-card">
                                 <div class="ip-card">
-                                    <div class="ip-address"></div>
+                                    <div class="ip-address">000.000.000.000</div>
                                     <div class="location-main">
                                         <div>
-                                            <div class="country"></div>
-                                            <div class="city"></div>
+                                            <div class="country">...</div>
+                                            <div class="city">...</div>
                                         </div>
                                         <div class="flag"></div>
                                     </div>
@@ -98,28 +124,28 @@
                                             <div class="stat-icon">🌐</div>
                                             <div class="stat-data">
                                                 <div class="stat-label">ISP</div>
-                                                <div class="isp"></div>
+                                                <div class="isp">...</div>
                                             </div>
                                         </div>
                                         <div class="stat-item">
                                             <div class="stat-icon">🕒</div>
                                             <div class="stat-data">
                                                 <div class="stat-label">Timezone</div>
-                                                <div class="timezone"></div>
+                                                <div class="timezone">...</div>
                                             </div>
                                         </div>
                                         <div class="stat-item">
                                             <div class="stat-icon">📍</div>
                                             <div class="stat-data">
                                                 <div class="stat-label">Coordinates</div>
-                                                <div class="coordinates"></div>
+                                                <div class="coordinates">...</div>
                                             </div>
                                         </div>
                                         <div class="stat-item">
                                             <div class="stat-icon">🛡️</div>
                                             <div class="stat-data">
                                                 <div class="stat-label">Risk Score</div>
-                                                <div class="risk-score"></div>
+                                                <div class="risk-score">...</div>
                                             </div>
                                         </div>
                                     </div>
@@ -132,13 +158,13 @@
                                     width="20" height="20">
                                     <path
                                         d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
-                                    </svg>
+                                </svg>
                                 <input type="text" class="search-bar" placeholder="Type here..." autocomplete="off">
                                 <button class="search-button">Search</button>
                                 <ul id="suggestions" class="suggestions"></ul>
                             </form>
 
-                            
+
                             <div class="search-options">
                                 <div class="search-with">Search With:</div>
                                 <div class="search-option active" data-engine="google">
@@ -146,7 +172,7 @@
                                         height="20">
                                         <path
                                             d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" />
-                                        </svg>
+                                    </svg>
                                     <span>Google</span>
                                 </div>
                                 <div class="search-option" data-engine="duck">
@@ -177,7 +203,11 @@
                                     <span>Brave</span>
                                 </div>
                                 <div class="search-option" data-engine="yandex">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="20" height="20"><path d="M129.5 512V345.9L18.5 48h55.8l81.8 229.7L250.2 0h51.3L180.8 347.8V512h-51.3z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="20"
+                                        height="20">
+                                        <path
+                                            d="M129.5 512V345.9L18.5 48h55.8l81.8 229.7L250.2 0h51.3L180.8 347.8V512h-51.3z" />
+                                        </svg>
                                     <span>Yandex</span>
                                 </div>
                                 <div class="search-option" data-engine="youtube">
@@ -190,7 +220,11 @@
                                     <span>YouTube</span>
                                 </div>
                                 <div class="search-option" data-engine="googleMaps">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="20" height="20"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="20"
+                                        height="20">
+                                        <path
+                                            d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z" />
+                                        </svg>
                                     <span>Google Maps</span>
                                 </div>
                             </div>
@@ -270,7 +304,8 @@
                 <input type="text" id="locationInput" placeholder="City, Country">
                 <button id="detectLocation" class="detect-location-button" title="Detect my location">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
-                        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                        <path
+                            d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
                     </svg>
                 </button>
             </div>
