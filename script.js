@@ -212,6 +212,7 @@ $(document).ready(() => {
         const autocompleteEnabled = localStorage.getItem('autocompleteEnabled') !== 'false';
         if (!autocompleteEnabled) {
             $('#suggestions').empty().css('opacity', '0');
+            $('input.search-bar').removeClass('focus');
             return;
         }
     
@@ -220,6 +221,7 @@ $(document).ready(() => {
         
         if (query.length < 1) {
             $suggestions.empty().css('opacity', '0');
+            $('input.search-bar').removeClass('focus');
             return;
         }
         
@@ -231,9 +233,11 @@ $(document).ready(() => {
                 $suggestions.append(`<li>${suggestion}</li>`);
             });
             $suggestions.show().css('opacity', '1');
+            $('input.search-bar').addClass('focus');
         } catch (error) {
             console.error('Error:', error);
             $suggestions.css('opacity', '0');
+            $('input.search-bar').removeClass('focus');
         }
     });
     // Also preload when the autocomplete toggle is enabled
@@ -266,6 +270,7 @@ $(document).ready(() => {
                     const selectedText = suggestions.eq(currentFocus).text();
                     $('.search-bar').val(selectedText);
                     $('#suggestions').empty().css('opacity', '0');
+                    $('input.search-bar').removeClass('focus');
                     $('.search-container').submit(); // Trigger search
                 } else {
                     // Trigger search if no suggestion is focused
@@ -275,6 +280,7 @@ $(document).ready(() => {
     
             case 'Escape':
                 $('#suggestions').empty().css('opacity', '0');
+                $('input.search-bar').removeClass('focus');
                 currentFocus = -1; // Reset focus
                 break;
         }
@@ -306,6 +312,7 @@ $(document).ready(() => {
     $(document).on('click', function (e) {
         if (!$(e.target).closest('.search-container').length) {
             $('#suggestions').empty().css('opacity', '0');
+            $('input.search-bar').removeClass('focus');
         }
     });
     // Add these new functions for autocomplete settings
@@ -320,6 +327,7 @@ $(document).ready(() => {
         if (!enabled) {
             // Clear and hide suggestions
             $('#suggestions').empty().css('opacity', '0');
+            $('input.search-bar').removeClass('focus');
         }
     }
     // Initialize settings

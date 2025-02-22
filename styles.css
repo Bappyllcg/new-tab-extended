@@ -293,10 +293,15 @@ input:focus {
     width: 100%;
     padding: 1rem 3rem;
     border: none;
-    border-radius: 30px;
+    border-radius: 24px;
     font-size: 1rem;
     background: white;
     outline: none;
+}
+
+.search-bar.focus {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
 }
 
 .search-icon {
@@ -601,11 +606,7 @@ input:checked+.toggle-slider:before {
     left: 0;
     right: 0;
     background: #fff;
-    /* Assuming a default background color */
-    border: 1px solid #ddd;
-    /* Assuming a default border color */
     border-radius: 0 0 10px 10px;
-    margin-top: 5px;
     list-style-type: none;
     padding: 0;
     max-height: 300px;
@@ -614,6 +615,21 @@ input:checked+.toggle-slider:before {
     opacity: 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.suggestions::-webkit-scrollbar {
+    width: 4px;
+}
+.suggestions::-webkit-scrollbar-track {
+    background: var(--background-color);
+}
+.suggestions::-webkit-scrollbar-thumb {
+    background: var(--shadow-color);
+    border-radius: 4px;
+}
+.suggestions::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
 
 .suggestions li {
     padding: 10px 20px;
