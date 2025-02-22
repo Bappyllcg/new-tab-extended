@@ -110,11 +110,20 @@ $(document).ready(() => {
     getIpInfo();
 
     // Search engine selection
+    function initializeSearchEngine() {
+        const savedEngine = localStorage.getItem('selectedSearchEngine') || 'google';
+        $('.search-option').removeClass('active');
+        $(`.search-option[data-engine="${savedEngine}"]`).addClass('active');
+    }
+
     $('.search-option').click(function () {
         $('.search-option').removeClass('active');
         $(this).addClass('active');
+        localStorage.setItem('selectedSearchEngine', $(this).data('engine'));
     });
 
+    // Initialize search engine selection
+    initializeSearchEngine();
     // Search functionality
     $('.search-container').submit(function (e) {
         e.preventDefault(); // Prevent default form submission
@@ -135,101 +144,68 @@ $(document).ready(() => {
             window.location.href = searchUrls[engine];
         }
     });
-
-    // Updated search suggestions code
+    // Modified search suggestions code
     let currentFocus = -1; // Track currently focused suggestion
-
-    // Add this preload function
-    function preloadAutocomplete() {
-        //const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-        const targetUrl = 'https://duckduckgo.com/ac/?q=a&type=list';
-
-        fetch(targetUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-                // Handle the data as needed
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+    // Replace or add this function
+    async function getGoogleSuggestions(query) {
+        try {
+            const response = await fetch(`https://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            return data[1]; // Returns the array of suggestions
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+            return [];
+        }
     }
-
-    // Modified search bar input handler (remove debouncing)
-    $('.search-bar').on('input', function () {
-        const autocompleteEnabled = $('#autocompleteToggle').is(':checked');
-        if (!autocompleteEnabled) {
-            return;
-        }
-
-        currentFocus = -1;
+    // Update your search input event handler
+    $('.search-bar').on('input', async function() {
         const query = $(this).val().trim();
-
-        if (!query) {
-            $('#suggestions').empty().css('opacity', '0');
+        const $suggestions = $('#suggestions');
+        console.log('Query:', query);
+        
+        if (query.length < 1) {
+            $suggestions.empty().css('opacity', '0');
             return;
         }
-
-        fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&type=list`, {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(data => {
-                const suggestionsList = $('#suggestions');
-                suggestionsList.empty();
-
-                if (data[1].length > 0) {
-                    data[1].forEach(function (suggestion) {
-                        suggestionsList.append(`<li>${suggestion}</li>`);
-                    });
-                    suggestionsList.css('opacity', '1');
-                } else {
-                    suggestionsList.css('opacity', '0');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching suggestions:', error);
-                $('#suggestions').empty().css('opacity', '0');
+        
+        try {
+            const suggestions = await getGoogleSuggestions(query);
+            $suggestions.empty();
+            
+            suggestions.forEach(suggestion => {
+                $suggestions.append(`<li>${suggestion}</li>`);
             });
+            $suggestions.show().css('opacity', '1');
+            console.log('Suggestions:', suggestions);
+        } catch (error) {
+            console.error('Error:', error);
+            $suggestions.css('opacity', '0');
+        }
     });
-
-    // Call preload when the page loads
-    preloadAutocomplete();
-
     // Also preload when the autocomplete toggle is enabled
     $('#autocompleteToggle').on('change', function () {
         const isEnabled = $(this).is(':checked');
         localStorage.setItem('autocompleteEnabled', isEnabled);
         updateAutocompleteUI(isEnabled);
-
-        if (isEnabled) {
-            preloadAutocomplete();
-        }
     });
-
     // Add keyboard navigation
     $('.search-bar').on('keydown', function (e) {
         const suggestions = $('#suggestions li');
         const maxIndex = suggestions.length - 1;
-
+    
         switch (e.key) {
             case 'ArrowDown':
                 e.preventDefault();
                 currentFocus = (currentFocus < maxIndex) ? currentFocus + 1 : 0; // Loop back to the first suggestion
                 updateFocus(suggestions);
                 break;
-
+    
             case 'ArrowUp':
                 e.preventDefault();
                 currentFocus = (currentFocus > 0) ? currentFocus - 1 : maxIndex; // Loop to the last suggestion
                 updateFocus(suggestions);
                 break;
-
+    
             case 'Enter':
                 e.preventDefault();
                 if (currentFocus > -1) {
@@ -242,14 +218,13 @@ $(document).ready(() => {
                     $('.search-container').submit(); // Add this line to submit the form
                 }
                 break;
-
+    
             case 'Escape':
                 $('#suggestions').empty().css('opacity', '0');
                 currentFocus = -1; // Reset focus
                 break;
         }
     });
-
     function updateFocus(suggestions) {
         suggestions.removeClass('active');
         if (currentFocus > -1) {
@@ -262,12 +237,10 @@ $(document).ready(() => {
             });
         }
     }
-
     // Store original input value
     $('.search-bar').on('input', function () {
         $(this).data('originalValue', $(this).val());
     });
-
     // Handle suggestion click
     $(document).on('click', '#suggestions li', function () {
         $('.search-bar').val($(this).text());
@@ -275,51 +248,44 @@ $(document).ready(() => {
         // Optionally trigger the search
         //$('.search-container').submit();
     });
-
     // Clear suggestions when clicking outside
     $(document).on('click', function (e) {
         if (!$(e.target).closest('.search-container').length) {
             $('#suggestions').empty().css('opacity', '0');
         }
     });
-
     // Add these new functions for autocomplete settings
     function initializeAutocompleteSettings() {
         // Load saved setting or default to true
         const autocompleteEnabled = localStorage.getItem('autocompleteEnabled') !== 'false';
         $('#autocompleteToggle').prop('checked', autocompleteEnabled);
-
-        // Update UI based on current setting
+    // Update UI based on current setting
         updateAutocompleteUI(autocompleteEnabled);
     }
-
     function updateAutocompleteUI(enabled) {
         if (!enabled) {
             // Clear and hide suggestions
             $('#suggestions').empty().css('opacity', '0');
         }
     }
-
     // Initialize settings
     initializeAutocompleteSettings();
-
     // Initialize location input with saved value
     function initializeLocationSettings() {
         const savedLocation = localStorage.getItem('weatherLocation') || 'New York';
         $('#locationInput').val(savedLocation);
     }
-
     // Handle location save
     $('#saveLocation').click(function (e) {
         e.preventDefault();
         $('.city-name').text('Loading...');
         const newLocation = $('#locationInput').val().trim();
-
+    
         if (newLocation) {
             // Test the location first
             const apiKey = getApiKey();
             const encodedLocation = encodeURIComponent(newLocation);
-
+    
             $.ajax({
                 url: `https://api.openweathermap.org/data/2.5/weather?q=${encodedLocation}&appid=${apiKey}&units=metric`,
                 method: 'GET',
@@ -355,24 +321,22 @@ $(document).ready(() => {
             alert('Please enter a location');
         }
     });
-
     // Add this to your initialization code
     initializeLocationSettings();
-
     // Add geolocation detection
     $('#detectLocation').click(function () {
         if ("geolocation" in navigator) {
             const button = $(this);
             button.prop('disabled', true);
-
+    
             // Show loading state
             button.html('<svg class="loading-spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle></svg>');
-
+    
             navigator.geolocation.getCurrentPosition(function (position) {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 const apiKey = getApiKey();
-
+    
                 // Reverse geocoding to get city name
                 $.ajax({
                     url: `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`,
@@ -401,7 +365,6 @@ $(document).ready(() => {
             alert('Geolocation is not supported by your browser');
         }
     });
-
     // Initialize bookmarks with default values
     let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [{
             url: 'https://facebook.com',
@@ -434,7 +397,6 @@ $(document).ready(() => {
             name: 'Twitter'
         }
     ];
-
     // Function to get favicon URL
     function getFaviconUrl(url) {
         try {
@@ -445,7 +407,6 @@ $(document).ready(() => {
             return '';
         }
     }
-
     // Function to get site name from URL
     function getSiteName(url) {
         try {
@@ -456,7 +417,6 @@ $(document).ready(() => {
             return 'Website';
         }
     }
-
     // Function to validate URL
     function isValidUrl(url) {
         try {
@@ -466,14 +426,13 @@ $(document).ready(() => {
             return false;
         }
     }
-
     // Function to render bookmarks
     function renderBookmarks() {
         const bookmarksList = $('.bookmarks-list');
         const bookmarksContainer = $('.bookmarks'); // For bottom-center bookmarks
         bookmarksList.empty(); // Clear existing bookmarks in settings
         bookmarksContainer.empty(); // Clear existing bookmarks in bottom-center
-
+    
         bookmarks.forEach(bookmark => {
             // Render in settings panel
             bookmarksList.append(`
@@ -488,7 +447,7 @@ $(document).ready(() => {
                     </div>
                 </div>
             `);
-
+    
             // Render in bottom-center
             bookmarksContainer.append(`
                 <a href="${bookmark.url}" class="bookmark" data-name="${bookmark.name}">
@@ -499,11 +458,9 @@ $(document).ready(() => {
                 </a>
             `);
         });
-
-        // Save to localStorage
+    // Save to localStorage
         localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     }
-
     // Add bookmark handler
     $('#addBookmark').click(() => {
         const url = $('#bookmarkUrl').val().trim();
@@ -511,11 +468,7 @@ $(document).ready(() => {
             alert('Please enter a valid URL');
             return;
         }
-
-        const favicon = getFaviconUrl(url);
-        const name = getSiteName(url);
-
-        // Check if bookmark already exists
+    // Check if bookmark already exists
         if (!bookmarks.some(b => b.url === url)) {
             bookmarks.push({
                 url,
@@ -528,22 +481,20 @@ $(document).ready(() => {
             alert('Bookmark already exists!');
         }
     });
-
     // Remove bookmark handler
     $(document).on('click', '.remove-bookmark', function () {
         const url = $(this).data('url');
         bookmarks = bookmarks.filter(b => b.url !== url);
         renderBookmarks();
     });
-
     // Edit bookmark handler
     $(document).on('click', '.edit-bookmark', function () {
         const url = $(this).data('url');
         const bookmark = bookmarks.find(b => b.url === url);
-
+    
         const newName = prompt("Edit bookmark name:", bookmark.name);
         const newUrl = prompt("Edit bookmark URL:", bookmark.url);
-
+    
         if (newName && newUrl && isValidUrl(newUrl)) {
             bookmark.name = newName;
             bookmark.url = newUrl;
@@ -553,14 +504,12 @@ $(document).ready(() => {
             alert('Please enter a valid URL');
         }
     });
-
     // Show settings panel when settingsButton is clicked
     $('#settingsButton').on('click', (event) => {
         event.stopPropagation();
         $('#settingsPanel').toggleClass('open');
         $('#overlay').toggle(); // Show or hide the overlay
     });
-
     // Hide settings panel and overlay when clicking outside
     $(document).on('click', function (event) {
         const settingsPanel = $('#settingsPanel');
@@ -570,13 +519,11 @@ $(document).ready(() => {
             overlay.hide(); // Hide the overlay
         }
     });
-
     // Hide settings panel and overlay when clicking on the overlay
     $('#overlay').on('click', function () {
         $('#settingsPanel').removeClass('open'); // Hide the settings panel
         $(this).hide(); // Hide the overlay
     });
-
     // Initial render
     renderBookmarks();
 });
