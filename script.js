@@ -1,4 +1,54 @@
 $(document).ready(() => {
+    // Initialize timezone settings
+    function initializeTimezoneSettings() {
+        const timezones = moment.tz.names(); // Get all available timezones
+        const savedTimezones = JSON.parse(localStorage.getItem('clockTimezones')) || [
+            'Europe/Copenhagen',
+            'Europe/London',
+            'Asia/Dhaka',
+            'America/New_York'
+        ];
+
+        // Populate timezone selects
+        $('.timezone-select').each(function(index) {
+            const select = $(this);
+            timezones.forEach(timezone => {
+                const option = $('<option></option>')
+                    .val(timezone)
+                    .text(timezone);
+                select.append(option);
+            });
+            // Set saved value
+            select.val(savedTimezones[index]);
+        });
+
+        // Update clocks with saved timezones
+        updateClockTimezones(savedTimezones);
+    }
+
+    // Handle timezone changes
+    $('.timezone-select').on('change', function() {
+        const newTimezones = $('.timezone-select').map(function() {
+            return $(this).val();
+        }).get();
+
+        // Save to localStorage
+        localStorage.setItem('clockTimezones', JSON.stringify(newTimezones));
+        
+        // Update clocks
+        updateClockTimezones(newTimezones);
+    });
+
+    function updateClockTimezones(timezones) {
+        $('.clock').each(function(index) {
+            $(this).attr('data-timezone', timezones[index]);
+            $(this).siblings('.clock-title').text(timezones[index]);
+        });
+    }
+
+    // Initialize timezone settings
+    initializeTimezoneSettings();
+
     // Clock
     function updateClock() {
         $(".clock").each(function() {
@@ -25,9 +75,9 @@ $(document).ready(() => {
     setInterval(updateClock, 1000);
 
     // Initialize the clock after the DOM is ready
-    // $(document).ready(function() {
-        updateClock();
-    // });
+    updateClock();
+
+    
 
     //Weather Input
     const weather = () => {
@@ -56,7 +106,6 @@ $(document).ready(() => {
         $('.clouds-all').text(`${data.main.feels_like}°`);
         $('.pressure').text(`${data.main.pressure} mbar`);
         $('.humidity').text(`${data.main.humidity}%`);
-        console.log(data)
     }
 
     if (localStorage.getItem('weatherLocation')) {
@@ -159,9 +208,15 @@ $(document).ready(() => {
     }
     // Update your search input event handler
     $('.search-bar').on('input', async function() {
+        // Check if autocomplete is enabled
+        const autocompleteEnabled = localStorage.getItem('autocompleteEnabled') !== 'false';
+        if (!autocompleteEnabled) {
+            $('#suggestions').empty().css('opacity', '0');
+            return;
+        }
+    
         const query = $(this).val().trim();
         const $suggestions = $('#suggestions');
-        console.log('Query:', query);
         
         if (query.length < 1) {
             $suggestions.empty().css('opacity', '0');
@@ -176,7 +231,6 @@ $(document).ready(() => {
                 $suggestions.append(`<li>${suggestion}</li>`);
             });
             $suggestions.show().css('opacity', '1');
-            console.log('Suggestions:', suggestions);
         } catch (error) {
             console.error('Error:', error);
             $suggestions.css('opacity', '0');
