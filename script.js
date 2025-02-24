@@ -556,13 +556,16 @@ $(document).ready(() => {
         }
     // Check if bookmark already exists
         if (!bookmarks.some(b => b.url === url)) {
+            const favicon = getFaviconUrl(url);
+            const name = getSiteName(url);
+            
             bookmarks.push({
-                url,
-                favicon,
-                name
+                url: url,
+                favicon: favicon,
+                name: name
             });
             renderBookmarks();
-            $('#bookmarkUrl').val('');
+            $('#bookmarkUrl').val(''); // Clear input field
         } else {
             alert('Bookmark already exists!');
         }
