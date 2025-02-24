@@ -1,4 +1,28 @@
 $(document).ready(() => {
+    // Theme switching
+    $('.theme-option').on('click', function() {
+        const theme = $(this).data('theme');
+        
+        // Remove active class from all options
+        $('.theme-option').removeClass('active');
+        
+        // Add active class to selected option
+        $(this).addClass('active');
+        
+        // Apply theme
+        $('html').attr('data-theme', theme);
+        
+        // Save theme preference
+        localStorage.setItem('preferred-theme', theme);
+    });
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('preferred-theme');
+    if (savedTheme) {
+        $('html').attr('data-theme', savedTheme);
+        $(`.theme-option[data-theme="${savedTheme}"]`).addClass('active');
+    }
+    
     // Initialize timezone settings
     function initializeTimezoneSettings() {
         const timezones = moment.tz.names(); // Get all available timezones

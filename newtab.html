@@ -6,6 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Tab</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Theme patterns */
+        [data-theme="light-blue"] {
+            --primary-color: #2196f3;
+            --text-on-primary: #ffffff;
+            --background-color: #BBD6FD;
+            --text-color: #000000;
+            --card-bg: #E2EEFF;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --search-bg: #ffffff;
+        }
+
+        [data-theme="dark-blue"] {
+            --primary-color: #1976d2;
+            --text-on-primary: #ffffff;
+            --background-color: #1a237e;
+            --text-color: #ffffff;
+            --card-bg: #283593;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --search-bg: #3949ab;
+        }
+
+        [data-theme="purple"] {
+            --primary-color: #9c27b0;
+            --text-on-primary: #ffffff;
+            --background-color: #f3e5f5;
+            --text-color: #000000;
+            --card-bg: #e1bee7;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --search-bg: #ffffff;
+        }
+
+        [data-theme="green"] {
+            --primary-color: #4caf50;
+            --text-on-primary: #ffffff;
+            --background-color: #c8e6c9;
+            --text-color: #000000;
+            --card-bg: #e8f5e9;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --search-bg: #ffffff;
+        }
+    </style>
+    <script src="./assets/scripts/theme-loader.js"></script>
 </head>
 
 <body>
@@ -286,8 +329,13 @@
     <div id="settingsPanel" class="settings-panel">
         <h2>Settings</h2>
         <div class="setting-item">
-            <label for="bgColor">Background Color:</label>
-            <input type="color" id="bgColor" value="#eceff1">
+            <label>Theme</label>
+            <div class="theme-options">
+                <div class="theme-option" data-theme="light-blue"></div>
+                <div class="theme-option" data-theme="dark-blue"></div>
+                <div class="theme-option" data-theme="purple"></div>
+                <div class="theme-option" data-theme="green"></div>
+            </div>
         </div>
         <div class="setting-item">
             <label class="toggle-label">

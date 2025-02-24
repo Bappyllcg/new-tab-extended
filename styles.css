@@ -1,4 +1,5 @@
 :root {
+    /* Default theme (Light Blue) */
     --primary-color: #2196f3;
     --text-on-primary: #ffffff;
     --background-color: #BBD6FD;
@@ -7,6 +8,9 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --search-bg: #ffffff;
 }
+
+
+
 
 * {
     margin: 0;
@@ -408,7 +412,7 @@ input:focus {
     height: 100vh;
     background: var(--card-bg);
     box-shadow: -2px 0 5px var(--shadow-color);
-    padding: 24px;
+    padding: 0px 24px 24px;
     transition: transform 0.3s ease;
     z-index: 1000;
     transform: translate(100%, 0px);
@@ -421,9 +425,16 @@ input:focus {
 
 .settings-panel h2 {
     font-size: 24px;
-    margin-bottom: 24px;
     color: var(--text-color);
     font-weight: 500;
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: var(--background-color);
+    padding: 15px 24px;
+    margin: 0px -24px 24px;
+    z-index: 9;
+    box-shadow: 0px 1px 1px var(--shadow-color);
 }
 
 .setting-item {
@@ -991,4 +1002,50 @@ input:checked+.toggle-slider:before {
     border: 1px solid #ccc;
     background-color: var(--card-bg);
     color: var(--text-color);
+}
+
+/* Theme Options Styles */
+.theme-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 16px;
+    background: var(--background-color);
+    border-radius: 12px;
+    border: 1px solid var(--shadow-color);
+}
+
+.theme-option {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-option:hover {
+    transform: scale(1.05);
+}
+
+.theme-option.active {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 0 2px var(--background-color);
+}
+
+.theme-option[data-theme="light-blue"] {
+    background: linear-gradient(45deg, #BBD6FD, #2196f3);
+}
+
+.theme-option[data-theme="dark-blue"] {
+    background: linear-gradient(45deg, #1a237e, #1976d2);
+}
+
+.theme-option[data-theme="purple"] {
+    background: linear-gradient(45deg, #f3e5f5, #9c27b0);
+}
+
+.theme-option[data-theme="green"] {
+    background: linear-gradient(45deg, #e8f5e9, #4caf50);
 }
