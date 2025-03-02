@@ -35,7 +35,7 @@ $(document).ready(() => {
             $('#appLauncher').removeClass('show');
         }
     });
-    
+
     
     // Initialize timezone settings
     function initializeTimezoneSettings() {
@@ -629,4 +629,106 @@ $(document).ready(() => {
     });
     // Initial render
     renderBookmarks();
+
+    //ToDo App
+    // Todo App Toggle
+    $('#todoAppBtn').on('click', function(e) {
+        e.stopPropagation();
+        $('#todoApp').toggleClass('show');
+    });
+
+    // Close todo app when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#todoApp').length && !$(e.target).closest('#todoAppBtn').length) {
+            $('#todoApp').removeClass('show');
+        }
+    });
+
+    // Todo App Functionality
+    function initializeTodoApp() {
+        // Load saved todos
+        const savedTodos = JSON.parse(localStorage.getItem('todos')) || [];
+        renderTodos(savedTodos);
+
+        // Add new todo
+        $('#addTodoBtn').on('click', addTodo);
+        $('#todoInput').on('keypress', function(e) {
+            if (e.which === 13) {
+                addTodo();
+            }
+        });
+
+        // Clear completed todos
+        $('#clearCompletedTodos').on('click', clearCompletedTodos);
+    }
+
+    function addTodo() {
+        const todoText = $('#todoInput').val().trim();
+        if (todoText) {
+            const todos = JSON.parse(localStorage.getItem('todos')) || [];
+            const newTodo = {
+                id: Date.now(),
+                text: todoText,
+                completed: false
+            };
+            todos.push(newTodo);
+            localStorage.setItem('todos', JSON.stringify(todos));
+            renderTodos(todos);
+            $('#todoInput').val('');
+        }
+    }
+
+    function toggleTodoComplete(id) {
+        const todos = JSON.parse(localStorage.getItem('todos')) || [];
+        const updatedTodos = todos.map(todo => {
+            if (todo.id === id) {
+                return { ...todo, completed: !todo.completed };
+            }
+            return todo;
+        });
+        localStorage.setItem('todos', JSON.stringify(updatedTodos));
+        renderTodos(updatedTodos);
+    }
+
+    function deleteTodo(id) {
+        const todos = JSON.parse(localStorage.getItem('todos')) || [];
+        const updatedTodos = todos.filter(todo => todo.id !== id);
+        localStorage.setItem('todos', JSON.stringify(updatedTodos));
+        renderTodos(updatedTodos);
+    }
+
+    function clearCompletedTodos() {
+        const todos = JSON.parse(localStorage.getItem('todos')) || [];
+        const updatedTodos = todos.filter(todo => !todo.completed);
+        localStorage.setItem('todos', JSON.stringify(updatedTodos));
+        renderTodos(updatedTodos);
+    }
+
+    function renderTodos(todos) {
+        const $todoList = $('#todoList');
+        $todoList.empty();
+
+        todos.forEach(todo => {
+            const $todoItem = $(`
+                <li class="todo-item" data-id="${todo.id}">
+                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+                    <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+                    <button class="delete-todo">×</button>
+                </li>
+            `);
+
+            $todoItem.find('.todo-checkbox').on('change', function() {
+                toggleTodoComplete(todo.id);
+            });
+
+            $todoItem.find('.delete-todo').on('click', function() {
+                deleteTodo(todo.id);
+            });
+
+            $todoList.append($todoItem);
+        });
+    }
+
+    // Initialize Todo App
+    initializeTodoApp();
 });
