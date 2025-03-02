@@ -51,9 +51,20 @@ $(document).ready(() => {
         $('.timezone-select').each(function(index) {
             const select = $(this);
             timezones.forEach(timezone => {
+                const parts = timezone.split('/');
+                let displayText = '';
+                
+                if (parts.length > 1) {
+                    // If timezone has a slash, format it with parentheses
+                    displayText = parts.reverse().join(' (').replace(/_/g, ' ') + ')';
+                } else {
+                    // If no slash, just use the timezone name with spaces instead of underscores
+                    displayText = timezone.replace(/_/g, ' ');
+                }
+                
                 const option = $('<option></option>')
                     .val(timezone)
-                    .text(timezone);
+                    .text(displayText);
                 select.append(option);
             });
             // Set saved value
@@ -80,7 +91,17 @@ $(document).ready(() => {
     function updateClockTimezones(timezones) {
         $('.clock').each(function(index) {
             $(this).attr('data-timezone', timezones[index]);
-            $(this).siblings('.clock-title').text(timezones[index]);
+            
+            const timezone = timezones[index];
+            const parts = timezone.split('/');
+            
+            if (parts.length > 1) {
+                // If timezone has a slash, format it with parentheses
+                $(this).siblings('.clock-title').text(parts.reverse().join(' (').replace(/_/g, ' ') + ')');
+            } else {
+                // If no slash, just display the timezone name with spaces instead of underscores
+                $(this).siblings('.clock-title').text(timezone.replace(/_/g, ' '));
+            }
         });
     }
 
