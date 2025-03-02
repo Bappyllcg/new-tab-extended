@@ -354,7 +354,14 @@
             </div>
         </div>
         <div class="bottom-wraper flex-bet-space">
-            <div class="bottom-left">left</div>
+            <div class="bottom-left">
+                <button id="newsButton" class="news-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+                        <path d="M22,3l-1.67,1.67L18.67,3L17,4.67L15.33,3l-1.66,1.67L12,3l-1.67,1.67L8.67,3L7,4.67L5.33,3L3.67,4.67L2,3v16 c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V3z M11,19H4v-6h7V19z M20,19h-7v-2h7V19z M20,15h-7v-2h7V15z M20,11H4V8h16V11z"/>
+                    </svg>
+                    <span>News</span>
+                </button>
+            </div>
             <div class="bottom-center">
                 <div class="bookmarks">
                     <a href="https://youtube.com" class="bookmark" data-name="YouTube">
@@ -466,6 +473,63 @@
                 <div class="bookmarks-list">
                     <!-- Bookmarks will be populated here -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Panel -->
+    <div id="newsPanel" class="news-panel">
+        <h2>News</h2>
+        <div id="newsConfig" class="news-config">
+            <h3>Configure Your News Feed</h3>
+            <p>Select categories you're interested in:</p>
+            <div class="news-categories">
+                <label class="category-label">
+                    <input type="checkbox" value="world" class="category-checkbox"> World
+                </label>
+                <label class="category-label">
+                    <input type="checkbox" value="politics" class="category-checkbox"> Politics
+                </label>
+                <label class="category-label">
+                    <input type="checkbox" value="business" class="category-checkbox"> Business
+                </label>
+                <label class="category-label">
+                    <input type="checkbox" value="technology" class="category-checkbox"> Technology
+                </label>
+                <label class="category-label">
+                    <input type="checkbox" value="science" class="category-checkbox"> Science
+                </label>
+                <label class="category-label">
+                    <input type="checkbox" value="sport" class="category-checkbox"> Sports
+                </label>
+                <label class="category-label">
+                    <input type="checkbox" value="environment" class="category-checkbox"> Environment
+                </label>
+                <label class="category-label">
+                    <input type="checkbox" value="culture" class="category-checkbox"> Culture
+                </label>
+                <label class="category-label">
+                    <input type="checkbox" value="lifestyle" class="category-checkbox"> Lifestyle
+                </label>
+            </div>
+            <button id="saveNewsPreferences" class="save-button">Save Preferences</button>
+        </div>
+        <div id="newsContent" class="news-content">
+            <div class="news-header">
+                <div class="news-filters">
+                    <select id="newsCategoryFilter" class="news-filter">
+                        <option value="all">All Categories</option>
+                    </select>
+                    <button id="refreshNews" class="refresh-news">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 24 24">
+                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                        </svg>
+                    </button>
+                </div>
+                <button id="configureNews" class="configure-news">Configure</button>
+            </div>
+            <div id="newsList" class="news-list">
+                <div class="news-loading">Loading news...</div>
             </div>
         </div>
     </div>

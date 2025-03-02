@@ -1256,3 +1256,206 @@ input:checked+.toggle-slider:before {
 .delete-todo:hover {
     opacity: 1;
 }
+
+/* News Bar  */
+/* News Button and Panel */
+.news-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.news-button svg {
+    fill: var(--text-color);
+}
+
+.news-button:hover {
+    background-color: var(--shadow-color);
+}
+
+.news-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 400px;
+    height: 100vh;
+    background: var(--card-bg);
+    padding: 20px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    z-index: 1000;
+    display: block;
+    transform: translate(-100%, 0px);
+    transition: .5s;
+}
+.news-panel.showPanel {
+    transform: translate(0%, 0px);
+}
+
+.news-panel h2 {
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+.news-config {
+    display: none;
+}
+
+.news-config.show {
+    display: block;
+}
+
+.news-content {
+    display: none;
+}
+
+.news-content.show {
+    display: block;
+}
+
+.news-categories {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.category-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.category-checkbox {
+    cursor: pointer;
+}
+
+.news-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.news-filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.news-filter {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white;
+}
+
+.refresh-news {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.refresh-news svg {
+    fill: var(--text-color);
+}
+
+.refresh-news:hover {
+    background-color: var(--shadow-color);
+}
+
+.configure-news {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    padding-right: 10px;
+    margin-right: -18px;
+}
+.news-list::-webkit-scrollbar {
+    width: 4px;
+}
+.news-list::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 4px;
+}
+.news-list::-webkit-scrollbar-track {
+    background-color: var(--background-color);
+}
+
+
+.news-item {
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.news-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+.news-item a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.news-item a:hover {
+    color: var(--primary-color);
+}
+
+.news-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #666;
+}
+
+.news-category {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.news-loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.save-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}

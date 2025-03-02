@@ -617,14 +617,28 @@ $(document).ready(() => {
     $(document).on('click', function (event) {
         const settingsPanel = $('#settingsPanel');
         const overlay = $('#overlay');
-        if (!settingsPanel.is(event.target) && settingsPanel.has(event.target).length === 0) {
+        const newsPanel = $('#newsPanel');
+        
+        // Only hide panels if clicking outside both panels
+        if (!settingsPanel.is(event.target) && 
+            settingsPanel.has(event.target).length === 0 && 
+            !newsPanel.is(event.target) && 
+            newsPanel.has(event.target).length === 0 && 
+            !$(event.target).closest('#settingsButton').length && 
+            !$(event.target).closest('#newsButton').length) {
+            
             settingsPanel.removeClass('open'); // Hide the settings panel
+            newsPanel.removeClass('showPanel'); // Hide the news panel
             overlay.hide(); // Hide the overlay
         }
     });
     // Hide settings panel and overlay when clicking on the overlay
-    $('#overlay').on('click', function () {
+    $('#overlay').on('click', function (event) {
+        // Prevent the click from propagating to document
+        event.stopPropagation();
+        
         $('#settingsPanel').removeClass('open'); // Hide the settings panel
+        $('#newsPanel').removeClass('showPanel'); // Hide the news panel
         $(this).hide(); // Hide the overlay
     });
     // Initial render
@@ -731,4 +745,167 @@ $(document).ready(() => {
 
     // Initialize Todo App
     initializeTodoApp();
+
+    // News Panel 
+    // News Panel Toggle
+    $('#newsButton').on('click', function(e) {
+        e.stopPropagation();
+        $('#newsPanel').addClass('showPanel');
+        $('#overlay').show();
+        
+        // Check if news preferences are already set
+        const newsPreferences = JSON.parse(localStorage.getItem('newsPreferences'));
+        if (!newsPreferences) {
+            // Show configuration panel if preferences aren't set
+            $('#newsConfig').addClass('show');
+            $('#newsContent').removeClass('show');
+        } else {
+            // Show news content if preferences are set
+            $('#newsConfig').removeClass('show');
+            $('#newsContent').addClass('show');
+            loadNews();
+        }
+    });
+    // Remove this event handler that's causing the issue
+    // Close news panel when clicking outside
+    /*$(document).on('click', function(e) {
+        if (!$(e.target).closest('#newsPanel').length && !$(e.target).closest('#newsButton').length) {
+            e.stopPropagation();
+            $('#newsPanel').removeClass('showPanel');
+            $('#overlay').hide();
+        }
+    });*/
+    // Save news preferences
+    $('#saveNewsPreferences').on('click', function() {
+        const selectedCategories = [];
+        $('.category-checkbox:checked').each(function() {
+            selectedCategories.push($(this).val());
+        });
+
+        if (selectedCategories.length === 0) {
+            alert('Please select at least one category');
+            return;
+        }
+
+        // Save preferences to localStorage
+        localStorage.setItem('newsPreferences', JSON.stringify(selectedCategories));
+        
+        // Update category filter dropdown
+        updateCategoryFilter(selectedCategories);
+        
+        // Switch to news content view
+        $('#newsConfig').removeClass('show');
+        $('#newsContent').addClass('show');
+        
+        // Load news
+        loadNews();
+    });
+
+    // Configure news button
+    $('#configureNews').on('click', function() {
+        $('#newsContent').removeClass('show');
+        $('#newsConfig').addClass('show');
+        
+        // Check saved preferences and update checkboxes
+        const newsPreferences = JSON.parse(localStorage.getItem('newsPreferences')) || [];
+        $('.category-checkbox').prop('checked', false);
+        newsPreferences.forEach(category => {
+            $(`.category-checkbox[value="${category}"]`).prop('checked', true);
+        });
+    });
+
+    // Refresh news button
+    $('#refreshNews').on('click', function() {
+        loadNews();
+    });
+
+    // Filter news by category
+    $('#newsCategoryFilter').on('change', function() {
+        const selectedCategory = $(this).val();
+        
+        if (selectedCategory === 'all') {
+            $('.news-item').show();
+        } else {
+            $('.news-item').hide();
+            $(`.news-item[data-category="${selectedCategory}"]`).show();
+        }
+    });
+
+    // Update category filter dropdown
+    function updateCategoryFilter(categories) {
+        const $filter = $('#newsCategoryFilter');
+        $filter.empty();
+        $filter.append('<option value="all">All Categories</option>');
+        
+        categories.forEach(category => {
+            $filter.append(`<option value="${category}">${category.charAt(0).toUpperCase() + category.slice(1)}</option>`);
+        });
+    }
+
+    // Load news from The Guardian API
+    function loadNews() {
+        const newsPreferences = JSON.parse(localStorage.getItem('newsPreferences')) || [];
+        if (newsPreferences.length === 0) return;
+        
+        const $newsList = $('#newsList');
+        $newsList.html('<div class="news-loading">Loading news...</div>');
+        
+        // Build query string with selected categories
+        const sectionQuery = newsPreferences.join('|');
+        const apiKey = '8ba90e96-b598-4ed1-a162-f7dba02cf081';
+        const apiUrl = `https://content.guardianapis.com/search?section=${sectionQuery}&api-key=${apiKey}&show-fields=thumbnail&page-size=15`;
+        
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            success: function(data) {
+                displayNews(data.response.results);
+            },
+            error: function(error) {
+                $newsList.html('<div class="news-loading">Failed to load news. Please try again later.</div>');
+                console.error('Error fetching news:', error);
+            }
+        });
+    }
+
+    // Display news in the panel
+    function displayNews(articles) {
+        const $newsList = $('#newsList');
+        $newsList.empty();
+        
+        if (!articles || articles.length === 0) {
+            $newsList.html('<div class="news-loading">No news found. Try selecting different categories.</div>');
+            return;
+        }
+        
+        articles.forEach(article => {
+            const category = article.sectionName;
+            const sectionId = article.sectionId;
+            const date = new Date(article.webPublicationDate);
+            const formattedDate = date.toLocaleDateString();
+            
+            const $newsItem = $(`
+                <div class="news-item" data-category="${sectionId}">
+                    <a href="${article.webUrl}" target="_blank">${article.webTitle}</a>
+                    <div class="news-meta">
+                        <span class="news-date">${formattedDate}</span>
+                        <span class="news-category">${category}</span>
+                    </div>
+                </div>
+            `);
+            
+            $newsList.append($newsItem);
+        });
+    }
+
+    // Initialize news if preferences exist
+    function initializeNews() {
+        const newsPreferences = JSON.parse(localStorage.getItem('newsPreferences'));
+        if (newsPreferences) {
+            updateCategoryFilter(newsPreferences);
+        }
+    }
+
+    // Initialize news
+    initializeNews();
 });
