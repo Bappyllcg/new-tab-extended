@@ -22,6 +22,20 @@ $(document).ready(() => {
         $('html').attr('data-theme', savedTheme);
         $(`.theme-option[data-theme="${savedTheme}"]`).addClass('active');
     }
+
+    // App Launcher Toggle
+    $('#appLauncherBtn').on('click', function(e) {
+        e.stopPropagation();
+        $('#appLauncher').toggleClass('show');
+    });
+
+    // Close app launcher when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#appLauncher').length) {
+            $('#appLauncher').removeClass('show');
+        }
+    });
+    
     
     // Initialize timezone settings
     function initializeTimezoneSettings() {
