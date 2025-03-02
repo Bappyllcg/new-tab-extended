@@ -842,31 +842,115 @@ $(document).ready(() => {
         });
     }
 
-    // Load news from The Guardian API
-    function loadNews() {
-        const newsPreferences = JSON.parse(localStorage.getItem('newsPreferences')) || [];
-        if (newsPreferences.length === 0) return;
+        // Variables to track pagination
+        let currentPage = 1;
+        let isLoadingMore = false;
         
-        const $newsList = $('#newsList');
-        $newsList.html('<div class="news-loading">Loading news...</div>');
-        
-        // Build query string with selected categories
-        const sectionQuery = newsPreferences.join('|');
-        const apiKey = '8ba90e96-b598-4ed1-a162-f7dba02cf081';
-        const apiUrl = `https://content.guardianapis.com/search?section=${sectionQuery}&api-key=${apiKey}&show-fields=thumbnail&page-size=15`;
-        
-        $.ajax({
-            url: apiUrl,
-            method: 'GET',
-            success: function(data) {
-                displayNews(data.response.results);
-            },
-            error: function(error) {
-                $newsList.html('<div class="news-loading">Failed to load news. Please try again later.</div>');
-                console.error('Error fetching news:', error);
+        // Load more news button handler
+        $('#loadMoreNews').on('click', function() {
+            if (!isLoadingMore) {
+                loadMoreNews();
             }
         });
-    }
+        
+        // Function to load more news
+        function loadMoreNews() {
+            isLoadingMore = true;
+            currentPage++;
+            
+            // Show loading state
+            $('#loadMoreNews').addClass('loading');
+            
+            const newsPreferences = JSON.parse(localStorage.getItem('newsPreferences')) || [];
+            if (newsPreferences.length === 0) return;
+            
+            // Build query string with selected categories
+            const sectionQuery = newsPreferences.join('|');
+            const apiKey = '8ba90e96-b598-4ed1-a162-f7dba02cf081';
+            const apiUrl = `https://content.guardianapis.com/search?section=${sectionQuery}&api-key=${apiKey}&show-fields=thumbnail&page-size=10&page=${currentPage}`;
+            
+            $.ajax({
+                url: apiUrl,
+                method: 'GET',
+                success: function(data) {
+                    appendNews(data.response.results);
+                    $('#loadMoreNews').removeClass('loading');
+                    isLoadingMore = false;
+                },
+                error: function(error) {
+                    $('#loadMoreNews').removeClass('loading').text('Error loading more news');
+                    console.error('Error fetching more news:', error);
+                    isLoadingMore = false;
+                }
+            });
+        }
+        
+        // Function to append more news to the existing list
+        function appendNews(articles) {
+            const $newsList = $('#newsList');
+            
+            if (!articles || articles.length === 0) {
+                $('#loadMoreNews').text('No more news available').prop('disabled', true);
+                return;
+            }
+            
+            articles.forEach(article => {
+                const category = article.sectionName;
+                const sectionId = article.sectionId;
+                const publishDate = moment(article.webPublicationDate);
+                const formattedDate = publishDate.format('DD MMM YYYY');
+                const timeAgo = publishDate.fromNow(true);
+                
+                const $newsItem = $(`
+                    <div class="news-item" data-category="${sectionId}">
+                        <a href="${article.webUrl}" target="_blank">${article.webTitle}</a>
+                        <div class="news-meta">
+                            <span class="news-date">${formattedDate} | ${timeAgo} Ago</span>
+                            <span class="news-category">${category}</span>
+                        </div>
+                    </div>
+                `);
+                
+                $newsList.append($newsItem);
+            });
+            
+            // Apply current category filter
+            const selectedCategory = $('#newsCategoryFilter').val();
+            if (selectedCategory !== 'all') {
+                $('.news-item').hide();
+                $(`.news-item[data-category="${selectedCategory}"]`).show();
+            }
+        }
+        
+        // Update the loadNews function to reset pagination
+        function loadNews() {
+            currentPage = 1;
+            isLoadingMore = false;
+            $('#loadMoreNews').removeClass('loading').text('Show More News').prop('disabled', false);
+            
+            const newsPreferences = JSON.parse(localStorage.getItem('newsPreferences')) || [];
+            if (newsPreferences.length === 0) return;
+            
+            const $newsList = $('#newsList');
+            $newsList.html('<div class="news-loading">Loading news...</div>');
+            
+            // Build query string with selected categories
+            const sectionQuery = newsPreferences.join('|');
+            const apiKey = '8ba90e96-b598-4ed1-a162-f7dba02cf081';
+            const apiUrl = `https://content.guardianapis.com/search?section=${sectionQuery}&api-key=${apiKey}&show-fields=thumbnail&page-size=10&page=1`;
+            
+            $.ajax({
+                url: apiUrl,
+                method: 'GET',
+                success: function(data) {
+                    displayNews(data.response.results);
+                },
+                error: function(error) {
+                    $newsList.html('<div class="news-loading">Failed to load news. Please try again later.</div>');
+                    console.error('Error fetching news:', error);
+                }
+            });
+        }
 
     // Display news in the panel
     function displayNews(articles) {
@@ -881,14 +965,15 @@ $(document).ready(() => {
         articles.forEach(article => {
             const category = article.sectionName;
             const sectionId = article.sectionId;
-            const date = new Date(article.webPublicationDate);
-            const formattedDate = date.toLocaleDateString();
+            const publishDate = moment(article.webPublicationDate);
+            const formattedDate = publishDate.format('DD MMM YYYY');
+            const timeAgo = publishDate.fromNow(true);
             
             const $newsItem = $(`
                 <div class="news-item" data-category="${sectionId}">
                     <a href="${article.webUrl}" target="_blank">${article.webTitle}</a>
                     <div class="news-meta">
-                        <span class="news-date">${formattedDate}</span>
+                        <span class="news-date">${formattedDate} | ${timeAgo} Ago</span>
                         <span class="news-category">${category}</span>
                     </div>
                 </div>

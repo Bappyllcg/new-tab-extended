@@ -382,7 +382,7 @@ input:focus {
     font-size: 16px;
 }
 
-.settings-button {
+.settings-button, .news-button {
     background: none;
     border: none;
     cursor: pointer;
@@ -391,11 +391,11 @@ input:focus {
     transition: background-color 0.3s;
 }
 
-.settings-button:hover {
+.settings-button:hover, .news-button:hover {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-.settings-button svg {
+.settings-button svg, .news-button svg {
     fill: #333;
 }
 
@@ -1258,27 +1258,7 @@ input:checked+.toggle-slider:before {
 }
 
 /* News Bar  */
-/* News Button and Panel */
-.news-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--card-bg);
-    color: var(--text-color);
-    padding: 8px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.news-button svg {
-    fill: var(--text-color);
-}
-
-.news-button:hover {
-    background-color: var(--shadow-color);
-}
-
+/* News Panel */
 .news-panel {
     position: fixed;
     left: 0;
@@ -1389,7 +1369,7 @@ input:checked+.toggle-slider:before {
     flex-direction: column;
     gap: 15px;
     overflow-y: auto;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 180px);
     padding-right: 10px;
     margin-right: -18px;
 }
@@ -1458,4 +1438,47 @@ input:checked+.toggle-slider:before {
     border-radius: 4px;
     cursor: pointer;
     margin-top: 10px;
+}
+.news-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.load-more-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.load-more-btn:hover {
+    transform: translateY(-2px);
+}
+
+.load-more-btn svg {
+    fill: white;
+    transition: transform 0.3s;
+}
+
+.load-more-btn:hover svg {
+    transform: translateY(2px);
+}
+
+.load-more-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.load-more-btn.loading span {
+    visibility: hidden;
 }
