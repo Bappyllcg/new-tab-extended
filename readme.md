@@ -72,4 +72,12 @@ A modern, feature-rich new tab replacement with material design aesthetics. Tran
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/material-browser.git
+git clone https://github.com/Bappyllcg/new-tab.git
+```
+2. Open the `index.html` file in your web browser.
+
+## 🤝 Contributing
+Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
