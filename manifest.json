@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Material Browser",
+    "name": "New Tab Extended",
     "version": "1.0",
     "description": "A new tab page styled with Material You design principles.",
     "permissions": [
@@ -11,7 +11,7 @@
       "https://suggestqueries.google.com/*"
     ],
     "chrome_url_overrides": {
-      "newtab": "newtab.html"
+      "newtab": "index.html"
     },
     "icons": {
       "16": "assets/icons/icon16.png",
