@@ -76,6 +76,28 @@ git clone https://github.com/Bappyllcg/new-tab-extended.git
 ```
 2. Open the `index.html` file in your web browser.
 
+## 🧑‍💻 Enable Developer Mode and Add as Chrome Extension
+1. Open Chrome Extensions Page :
+   
+   - Open Google Chrome.
+   - Click on the three-dot menu in the top-right corner.
+   - Navigate to More Tools > Extensions .
+2. Enable Developer Mode :
+   
+   - On the Extensions page, toggle the Developer mode switch located in the top-right corner.
+3. Load Unpacked Extension :
+   
+   - Click on the Load unpacked button.
+   - In the file dialog, navigate to the directory where you cloned the repository ( new-tab-extended ).
+   - Select the folder and click Open .
+4. Verify Installation :
+   
+   - The extension should now appear in your list of extensions.
+   - Ensure it is enabled and functioning correctly.
+5. Test the Extension :
+   
+   - Open a new tab in Chrome to see the "New Tab Extended" in action.
+
 ## 🤝 Contributing
 Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
 
