@@ -69,6 +69,10 @@ $(document).ready(() => {
             });
             // Set saved value
             select.val(savedTimezones[index]);
+            select.select2({
+                placeholder: "Select a programming language",
+                allowClear: true
+            });
         });
 
         // Update clocks with saved timezones
