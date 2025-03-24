@@ -41,10 +41,10 @@ $(document).ready(() => {
     function initializeTimezoneSettings() {
         const timezones = moment.tz.names(); // Get all available timezones
         const savedTimezones = JSON.parse(localStorage.getItem('clockTimezones')) || [
-            'Europe/Copenhagen',
-            'Europe/London',
-            'Asia/Dhaka',
-            'America/New_York'
+            "Asia/Dhaka",
+            "Europe/London",
+            "America/New_York",
+            "Asia/Karachi"
         ];
 
         // Populate timezone selects
@@ -101,7 +101,8 @@ $(document).ready(() => {
             
             if (parts.length > 1) {
                 // If timezone has a slash, format it with parentheses
-                $(this).siblings('.clock-title').text(parts.reverse().join(' (').replace(/_/g, ' ') + ')');
+                // $(this).siblings('.clock-title').text(parts.reverse().join(' (').replace(/_/g, ' ') + ')');
+                $(this).siblings('.clock-title').text(parts[1].replace(/_/g, ' '));
             } else {
                 // If no slash, just display the timezone name with spaces instead of underscores
                 $(this).siblings('.clock-title').text(timezone.replace(/_/g, ' '));
