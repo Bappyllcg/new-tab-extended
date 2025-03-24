@@ -1,4 +1,4 @@
-# Material Browser 🌐
+# NEW TAB EXTENDED 🌐
 
 A modern, feature-rich new tab replacement with material design aesthetics. Transform your browsing experience with customizable themes, multiple time zones, weather updates, and smart search capabilities.
 
@@ -72,7 +72,7 @@ A modern, feature-rich new tab replacement with material design aesthetics. Tran
 
 1. Clone the repository
 ```bash
-git clone https://github.com/Bappyllcg/new-tab.git
+git clone https://github.com/Bappyllcg/new-tab-extended.git
 ```
 2. Open the `index.html` file in your web browser.
 
